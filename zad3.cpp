@@ -10,14 +10,15 @@
 
 using namespace std;
 
-void print_sudoku(array<array<int, 9>, 9> tab) {
+void print_sudoku(array<array<int, 9>, 9> tab, string name) {
+	ofstream f(name+".txt");
 	for (size_t i = 0; i < 9; i++) {
 		for (size_t j = 0; j < 9; j++) {
-			cout << tab[i][j] << " ";
+			f << tab[i][j] << " ";
 		}
-		cout << "\n";
+		f << "\n";
 	}
-	cout << "\n";
+	f.close();
 }
 
 int calcEnergy(array<array<int, 9>, 9> tab) {
@@ -111,7 +112,6 @@ array<array<int, 9>, 9> annealing(array<array<int, 9>, 9> sudoku, set<pair<int, 
 		}
 	}
 	f.close();
-	cout << "\n\n" << globalBestEnergy << "\n\n";
 	return globalBestSudoku;
 }
 
@@ -161,8 +161,6 @@ int zad3(string name, bool isHard, double initialT, double multi, size_t kmax) {
 	}
 	sudoku_file.close();
 
-	// print_sudoku(sudoku);
-
 	int digit = 0;
 	for (size_t i = 0; i < 9; i++) {
 		for (size_t j = 0; j < 9; j++) {
@@ -174,14 +172,10 @@ int zad3(string name, bool isHard, double initialT, double multi, size_t kmax) {
 				digit++;
 		}
 	}
-	cout << "\n\n";
-	// print_sudoku(sudoku);
-
-	// cout << "\n\n" << calcEnergy(sudoku) << "\n\n";
 
 	array<array<int, 9>, 9> result = annealing(sudoku, not_changing, initialT, multi, kmax);
 
-	print_sudoku(result);
+	print_sudoku(result, "post_"+name);
 	Gnuplot gpp;
 	// gpp << "set terminal qt\n";
 	// gpp << "plot 'func_zad3.dat' with lines\n";
