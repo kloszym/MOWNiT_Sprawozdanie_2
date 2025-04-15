@@ -24,102 +24,64 @@ using neigh_func = void (*)(int, int *);
 using namespace cimg_library;
 using namespace std;
 
-// rewrite it to be more modular
-int energy_4_neigh(int i, bitset<bitsetSize> boardData) {
-
-	int energy = 0;
-	boolean k = boardData[i];
-
-	// up
-	if ((i + gridSide) / bitsetSize > 0) {
-		energy += boardData[(i + gridSide) % bitsetSize] == k ? -weight : weight;
-	} else {
-		energy += boardData[i + gridSide] == k ? -weight : weight;
-	}
-
-	// down
-	if (i - gridSide < 0) {
-		energy += boardData[bitsetSize + i - gridSide] == k ? -weight : weight;
-	} else {
-		energy += boardData[i - gridSide] == k ? -weight : weight;
-	}
-
-	// left
-	if ((i + 1) % gridSide == 0) {
-		energy += boardData[i + 1 - gridSide] == k ? -weight : weight;
-	} else {
-		energy += boardData[i + 1] == k ? -weight : weight;
-	}
-
-	// right
-	if ((i - 1) % gridSide == 0 || i - 1 == -1) {
-		energy += boardData[i - 1 + gridSide] == k ? -weight : weight;
-	} else {
-		energy += boardData[i - 1] == k ? -weight : weight;
-	}
-
-	return energy;
-}
-
-// for neigh_small_x
-inline int mod(int a, int n) { return ((a % n) + n) % n; }
+inline int mod(int a) { return ((a % gridSide) + gridSide) % gridSide; }
 
 inline void neigh_small_x(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row - 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[1] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[2] = mod(row + 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[3] = mod(row + 1, gridSide) * gridSide + mod(col - 1, gridSide);
+	tab[0] = mod(row - 1) * gridSide + mod(col + 1);
+	tab[1] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[2] = mod(row + 1) * gridSide + mod(col + 1);
+	tab[3] = mod(row + 1) * gridSide + mod(col - 1);
 }
 
 inline void neigh_x(int i, int *tab) {
 	int row = i / gridSide; // zamiast index / size
 	int col = i % gridSide; // zamiast index % size
 
-	tab[0] = mod(row - 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[1] = mod(row - 2, gridSide) * gridSide + mod(col + 2, gridSide);
+	tab[0] = mod(row - 1) * gridSide + mod(col + 1);
+	tab[1] = mod(row - 2) * gridSide + mod(col + 2);
 
-	tab[2] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[3] = mod(row - 2, gridSide) * gridSide + mod(col - 2, gridSide);
+	tab[2] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[3] = mod(row - 2) * gridSide + mod(col - 2);
 
-	tab[4] = mod(row + 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[5] = mod(row + 2, gridSide) * gridSide + mod(col + 2, gridSide);
+	tab[4] = mod(row + 1) * gridSide + mod(col + 1);
+	tab[5] = mod(row + 2) * gridSide + mod(col + 2);
 
-	tab[6] = mod(row + 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[7] = mod(row + 2, gridSide) * gridSide + mod(col - 2, gridSide);
+	tab[6] = mod(row + 1) * gridSide + mod(col - 1);
+	tab[7] = mod(row + 2) * gridSide + mod(col - 2);
 }
 
 inline void neigh_big_x(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row - 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[1] = mod(row - 2, gridSide) * gridSide + mod(col + 2, gridSide);
-	tab[2] = mod(row - 3, gridSide) * gridSide + mod(col + 3, gridSide);
+	tab[0] = mod(row - 1) * gridSide + mod(col + 1);
+	tab[1] = mod(row - 2) * gridSide + mod(col + 2);
+	tab[2] = mod(row - 3) * gridSide + mod(col + 3);
 
-	tab[3] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[4] = mod(row - 2, gridSide) * gridSide + mod(col - 2, gridSide);
-	tab[5] = mod(row - 3, gridSide) * gridSide + mod(col - 3, gridSide);
+	tab[3] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[4] = mod(row - 2) * gridSide + mod(col - 2);
+	tab[5] = mod(row - 3) * gridSide + mod(col - 3);
 
-	tab[6] = mod(row + 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[7] = mod(row + 2, gridSide) * gridSide + mod(col + 2, gridSide);
-	tab[8] = mod(row + 3, gridSide) * gridSide + mod(col + 3, gridSide);
+	tab[6] = mod(row + 1) * gridSide + mod(col + 1);
+	tab[7] = mod(row + 2) * gridSide + mod(col + 2);
+	tab[8] = mod(row + 3) * gridSide + mod(col + 3);
 
-	tab[9] = mod(row + 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[10] = mod(row + 2, gridSide) * gridSide + mod(col - 2, gridSide);
-	tab[11] = mod(row + 3, gridSide) * gridSide + mod(col - 3, gridSide);
+	tab[9] = mod(row + 1) * gridSide + mod(col - 1);
+	tab[10] = mod(row + 2) * gridSide + mod(col - 2);
+	tab[11] = mod(row + 3) * gridSide + mod(col - 3);
 }
 
 inline void neigh_small_cross(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[1] = mod(row, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[2] = mod(row + 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[3] = mod(row - 1, gridSide) * gridSide + mod(col, gridSide);
+	tab[0] = mod(row) * gridSide + mod(col + 1);
+	tab[1] = mod(row) * gridSide + mod(col - 1);
+	tab[2] = mod(row + 1) * gridSide + mod(col);
+	tab[3] = mod(row - 1) * gridSide + mod(col);
 }
 
 inline void neigh_big_cross(int i, int *tab) {
@@ -127,62 +89,62 @@ inline void neigh_big_cross(int i, int *tab) {
 	int col = i % gridSide;
 
 
-	tab[0] = mod(row + 3, gridSide) * gridSide + mod(col, gridSide);
-	tab[1] = mod(row + 3, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[2] = mod(row + 2, gridSide) * gridSide + mod(col, gridSide);
-	tab[3] = mod(row + 1, gridSide) * gridSide + mod(col - 3, gridSide);
-	tab[4] = mod(row + 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[5] = mod(row, gridSide) * gridSide + mod(col - 3, gridSide);
-	tab[6] = mod(row, gridSide) * gridSide + mod(col - 2, gridSide);
-	tab[7] = mod(row, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[8] = mod(row, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[9] = mod(row, gridSide) * gridSide + mod(col + 2, gridSide);
-	tab[10] = mod(row, gridSide) * gridSide + mod(col + 3, gridSide);
-	tab[11] = mod(row - 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[12] = mod(row - 1, gridSide) * gridSide + mod(col + 3, gridSide);
-	tab[13] = mod(row - 2, gridSide) * gridSide + mod(col, gridSide);
-	tab[14] = mod(row + 3, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[15] = mod(row + 3, gridSide) * gridSide + mod(col, gridSide);
+	tab[0] = mod(row + 3) * gridSide + mod(col);
+	tab[1] = mod(row + 3) * gridSide + mod(col + 1);
+	tab[2] = mod(row + 2) * gridSide + mod(col);
+	tab[3] = mod(row + 1) * gridSide + mod(col - 3);
+	tab[4] = mod(row + 1) * gridSide + mod(col);
+	tab[5] = mod(row) * gridSide + mod(col - 3);
+	tab[6] = mod(row) * gridSide + mod(col - 2);
+	tab[7] = mod(row) * gridSide + mod(col - 1);
+	tab[8] = mod(row) * gridSide + mod(col + 1);
+	tab[9] = mod(row) * gridSide + mod(col + 2);
+	tab[10] = mod(row) * gridSide + mod(col + 3);
+	tab[11] = mod(row - 1) * gridSide + mod(col);
+	tab[12] = mod(row - 1) * gridSide + mod(col + 3);
+	tab[13] = mod(row - 2) * gridSide + mod(col);
+	tab[14] = mod(row + 3) * gridSide + mod(col - 1);
+	tab[15] = mod(row + 3) * gridSide + mod(col);
 }
 
 inline void neigh_elongated_vertical(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row + 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[1] = mod(row + 2, gridSide) * gridSide + mod(col, gridSide);
-	tab[2] = mod(row + 3, gridSide) * gridSide + mod(col, gridSide);
-	tab[3] = mod(row - 1, gridSide) * gridSide + mod(col - 2, gridSide);
-	tab[4] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[5] = mod(row - 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[6] = mod(row - 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[7] = mod(row - 1, gridSide) * gridSide + mod(col + 2, gridSide);
+	tab[0] = mod(row + 1) * gridSide + mod(col);
+	tab[1] = mod(row + 2) * gridSide + mod(col);
+	tab[2] = mod(row + 3) * gridSide + mod(col);
+	tab[3] = mod(row - 1) * gridSide + mod(col - 2);
+	tab[4] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[5] = mod(row - 1) * gridSide + mod(col);
+	tab[6] = mod(row - 1) * gridSide + mod(col + 1);
+	tab[7] = mod(row - 1) * gridSide + mod(col + 2);
 }
 
 inline void neigh_slash(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row + 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[1] = mod(row + 2, gridSide) * gridSide + mod(col + 2, gridSide);
-	tab[2] = mod(row + 3, gridSide) * gridSide + mod(col + 3, gridSide);
-	tab[3] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[4] = mod(row - 2, gridSide) * gridSide + mod(col - 2, gridSide);
-	tab[5] = mod(row - 3, gridSide) * gridSide + mod(col - 3, gridSide);
+	tab[0] = mod(row + 1) * gridSide + mod(col + 1);
+	tab[1] = mod(row + 2) * gridSide + mod(col + 2);
+	tab[2] = mod(row + 3) * gridSide + mod(col + 3);
+	tab[3] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[4] = mod(row - 2) * gridSide + mod(col - 2);
+	tab[5] = mod(row - 3) * gridSide + mod(col - 3);
 }
 
 inline void neigh_some_wierd(int i, int *tab) {
 	int row = i / gridSide;
 	int col = i % gridSide;
 
-	tab[0] = mod(row + 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[1] = mod(row + 2, gridSide) * gridSide + mod(col, gridSide);
-	tab[2] = mod(row + 1, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[3] = mod(row + 2, gridSide) * gridSide + mod(col + 1, gridSide);
-	tab[4] = mod(row - 1, gridSide) * gridSide + mod(col, gridSide);
-	tab[5] = mod(row - 2, gridSide) * gridSide + mod(col, gridSide);
-	tab[6] = mod(row - 1, gridSide) * gridSide + mod(col - 1, gridSide);
-	tab[7] = mod(row - 2, gridSide) * gridSide + mod(col - 1, gridSide);
+	tab[0] = mod(row + 1) * gridSide + mod(col);
+	tab[1] = mod(row + 2) * gridSide + mod(col);
+	tab[2] = mod(row + 1) * gridSide + mod(col + 1);
+	tab[3] = mod(row + 2) * gridSide + mod(col + 1);
+	tab[4] = mod(row - 1) * gridSide + mod(col);
+	tab[5] = mod(row - 2) * gridSide + mod(col);
+	tab[6] = mod(row - 1) * gridSide + mod(col - 1);
+	tab[7] = mod(row - 2) * gridSide + mod(col - 1);
 }
 
 int energy_for_neigh(int i, bitset<bitsetSize> boardData, neigh_func foo, size_t big) {
