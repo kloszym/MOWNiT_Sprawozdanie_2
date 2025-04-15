@@ -73,7 +73,7 @@ vector<Point> getRandomNeighbor(vector<Point> nodes) {
 	return toSwapped2opt(nodes, v1, v2);
 }
 
-auto tsp(vector<Point> nodes, double initialT, double multi, size_t kmax, bool ifRandom) {
+auto annealing(vector<Point> nodes, double initialT, double multi, size_t kmax, bool ifRandom) {
 	size_t iterations = 0;
 	vector<Point> currentPath = nodes;
 	size_t size = nodes.size();
@@ -137,7 +137,7 @@ void visualizeGraph(vector<Point> nodes, string name, double point_size) {
 	plotCommand.append(to_string(point_size));
 	plotCommand.append(") with circles fill solid lc rgb \"black\" notitle, 'graph.dat' using 1:2:3     with labels tc "
 					   "rgb \"white\" offset (0,0) font 'Arial Bold' notitle\n");
-	gp << plotCommand;
+	//gp << plotCommand;
 	gp << "set terminal svg size 800, 800; set output '../img/" << name << ".svg'; " << plotCommand;
 }
 
